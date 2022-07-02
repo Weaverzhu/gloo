@@ -97,6 +97,23 @@ if(USE_LIBUV)
   endif()
 endif()
 
+if (USE_LIBURING)
+  include(FindPkgConfig)
+  pkg_search_module(liburing REQUIRED liburing>=2.0)
+  add_library(gloo_uring INTERFACE IMPORTED)
+  message("weaverzhu 1:${liburing_INCLUDE_DIRS} 2:${liburing_LIBRARIES}")
+  # if(NOT EXISTS ${liburing_LIBRARIES})
+  #   message(FATAL_ERROR "Unable to find liburing")
+  # endif()
+  if(NOT EXISTS ${liburing_INCLUDE_DIRS})
+    set(liburing_INCLUDE_DIRS /usr)
+  endif()
+  set_target_properties(gloo_uring PROPERTIES
+    INTERFACE_INCLUDE_DIRECTORIES ${liburing_INCLUDE_DIRS}
+    INTERFACE_LINK_LIBRARIES ${liburing_LIBRARIES}
+    )
+endif()
+
 if(USE_MPI)
   find_package(MPI)
   if(MPI_C_FOUND)
